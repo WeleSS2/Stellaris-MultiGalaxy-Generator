@@ -1,72 +1,91 @@
-class Application_Modules
+void setup_app::app_set_screen_width_height(int x, int y)
 {
-private:
-    std::shared_ptr<Window_Init> P_Window_Init;
-    std::shared_ptr<Graphics_Engine> P_Graphics_Engine;
-    std::shared_ptr<Buttons_Objects> P_Buttons_Objects;
-public:
-    Application_Modules()
-    {
-        P_Window_Init = std::shared_ptr<Window_Init>(std::make_shared<Window_Init>());
-        P_Graphics_Engine = std::shared_ptr<Graphics_Engine>(std::make_shared<Graphics_Engine>());
-        P_Buttons_Objects = std::shared_ptr<Buttons_Objects>(std::make_shared<Buttons_Objects>());
-    };
-
-    void main_menu_module()
-    {
-        P_Graphics_Engine->gModulatedTexture.setAlpha(P_Graphics_Engine->get_alpha());
-        P_Graphics_Engine->gModulatedTexture.render(P_Window_Init->get_center_width() + 1200, P_Window_Init->get_center_height(), 720, 150);
-
-        /*P_Buttons_Objects->Main_Menu_Buttons[0].setPosition(P_Window_Init->get_center_width() + 1245, P_Window_Init->get_center_height() + 20);
-        P_Buttons_Objects->Main_Menu_Buttons[1].setPosition(P_Window_Init->get_center_width() + 1245, P_Window_Init->get_center_height() + 85);
-        P_Buttons_Objects->Main_Menu_Buttons[2].setPosition(P_Window_Init->get_center_width() + 1465, P_Window_Init->get_center_height() + 20);
-        P_Buttons_Objects->Main_Menu_Buttons[3].setPosition(P_Window_Init->get_center_width() + 1465, P_Window_Init->get_center_height() + 85);
-        P_Buttons_Objects->Main_Menu_Buttons[4].setPosition(P_Window_Init->get_center_width() + 1690, P_Window_Init->get_center_height() + 20);
-        P_Buttons_Objects->Main_Menu_Buttons[5].setPosition(P_Window_Init->get_center_width() + 1690, P_Window_Init->get_center_height() + 85);
-
-        for (int i = 0; i < 6; ++i)
-        {
-            P_Buttons_Objects->Main_Menu_Buttons[i].render();
-        }*/
-    };
+    SMGG_P::P_Window_Init->set_screen_width_height(x, y);
+    SMGG_P::P_Window_Init->set_center();
 };
 
-class setup_app
+bool setup_app::get_init()
 {
-private:
-    std::shared_ptr<Window_Init> P_Window_Init;
-    std::shared_ptr<Graphics_Engine> P_Graphics_Engine;
-    std::shared_ptr<Application_Modules> P_Application_Modules;
-public:
-    setup_app()
+    return SMGG_P::P_Window_Init->init();
+};
+
+bool setup_app::get_loadMedia()
+{
+    return SMGG_P::P_Graphics_Engine->loadMedia();
+};
+
+void setup_app::app_background()
+{
+    SMGG_P::P_Graphics_Engine->background();
+};
+
+void setup_app::rerender()
+{
+    throw_out_buttons();
+    SDL_RenderClear(SMGG::gRenderer);
+    app_background();
+    if (SMGG::OpenedWindow.test(0))
     {
-        P_Window_Init = std::shared_ptr<Window_Init>(std::make_shared <Window_Init>());
-        P_Graphics_Engine = std::shared_ptr<Graphics_Engine>(std::make_shared <Graphics_Engine>());
-        P_Application_Modules = std::shared_ptr<Application_Modules>(std::make_shared <Application_Modules>());
+        SMGG_P::P_Application_Modules->main_menu_module();
     }
-    void app_set_screen_width_height(int x, int y)
+    if (SMGG::OpenedWindow.test(1))
     {
-        P_Window_Init->set_screen_width_height(x, y);
-        P_Window_Init->set_center();
-    };
-
-    bool get_init()
+        SMGG_P::P_Application_Modules->left_map_module();
+    }
+    if (SMGG::OpenedWindow.test(10))
     {
-        return P_Window_Init->init();
-    };
-
-    bool get_loadMedia()
+        SMGG_P::P_Application_Modules->galaxies_module();
+        if (SMGG::OpenedWindow.test(11))
+        {
+            SMGG_P::P_Application_Modules->galaxies_module_manage_galaxies();
+        }
+        if (SMGG::OpenedWindow.test(12))
+        {
+            SMGG_P::P_Application_Modules->galaxies_module_manage_hyperlanes();
+        }
+        if (SMGG::OpenedWindow.test(13))
+        {
+            SMGG_P::P_Application_Modules->galaxies_module_manage_initializers();
+        }
+    }
+    if (SMGG::OpenedWindow.test(20))
     {
-        return P_Graphics_Engine->loadMedia();
-    };
-
-    void app_background()
-    {
-        P_Graphics_Engine->loadMedia();
-        P_Graphics_Engine->background();
-        P_Application_Modules->main_menu_module();
-        std::cout << "Work" << std::endl;
-        SDL_RenderPresent(SMGG::gRenderer);
-        SDL_Delay(50000);
-    };
+        SMGG_P::P_Application_Modules->maps_module();
+    }
+    SDL_RenderPresent(SMGG::gRenderer);
 };
+
+void setup_app::throw_out_buttons()
+{
+    SMGG_P::P_Buttons_Objects->Button_Back.setPosition(-1000, -1000);
+    if (SMGG::OpenedWindow.test(0))
+    {
+        for (int i = 0; i < SMGG_P::P_Buttons_Objects->Main_Menu_Buttons.size(); ++i)
+        {
+            SMGG_P::P_Buttons_Objects->Main_Menu_Buttons[i].setPosition(-1000, -1000);
+        }
+    }
+    if (SMGG::OpenedWindow.test(10))
+    {
+        for (int i = 0; i < SMGG_P::P_Buttons_Objects->Galaxies_Buttons.size(); ++i)
+        {
+            SMGG_P::P_Buttons_Objects->Galaxies_Buttons[i].setPosition(-1000, -1000);
+        }
+    }
+    for (int i = 0; i < SMGG_P::P_Buttons_Objects->Main_Detailed_Generation_Buttons.size(); ++i)
+    {
+        SMGG_P::P_Buttons_Objects->Main_Detailed_Generation_Buttons[i].setPosition(-1000, -1000);
+    }
+    for (int i = 0; i < SMGG_P::P_Buttons_Objects->Initializers_Buttons.size(); ++i)
+    {
+        SMGG_P::P_Buttons_Objects->Initializers_Buttons[i].setPosition(-1000, -1000);
+    }
+    for (int i = 0; i < SMGG_P::P_Buttons_Objects->Map_Buttons.size(); ++i)
+    {
+        SMGG_P::P_Buttons_Objects->Map_Buttons[i].setPosition(-1000, -1000);
+    }
+    for (int i = 0; i < SMGG_P::P_Buttons_Objects->Settings_Buttons.size(); ++i)
+    {
+        SMGG_P::P_Buttons_Objects->Settings_Buttons[i].setPosition(-1000, -1000);
+    }
+}

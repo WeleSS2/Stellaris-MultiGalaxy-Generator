@@ -9,6 +9,7 @@ find_package(SDL2_ttf REQUIRED PATHS ${PROJECT_SOURCE_DIR}/Dependencies/SDL_TTF)
 find_package(STEAMAPI REQUIRED PATHS ${PROJECT_SOURCE_DIR}/Dependencies/STEAM_API)
 
 add_subdirectory ("Source")
+add_subdirectory ("Headers")
 
 target_include_directories(CMakeTarget PRIVATE "${PROJECT_SOURCE_DIR}/Graphics")
 

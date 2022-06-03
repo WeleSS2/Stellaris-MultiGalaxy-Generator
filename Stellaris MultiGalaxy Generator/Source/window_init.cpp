@@ -1,42 +1,3 @@
-class Window_Init {
-public:
-    SDL_Window* gWindow = NULL;
-
-    //Initialize window
-    bool init();
-
-    //Window size/Dynamic window sizing
-    void set_screen_width_height(int w, int h)
-    {
-        SCREEN_WIDTH = w;
-        SCREEN_HEIGHT = h;
-    }
-
-    //Setting a center
-    void set_center()
-    {
-        center_width = ((SCREEN_WIDTH - 1920) / 2);
-        center_height = ((SCREEN_HEIGHT - 1080) / 2);
-    }
-
-    virtual int get_center_width()
-    {
-        return center_width;
-    }
-
-    virtual int get_center_height()
-    {
-        return center_height;
-    }
-private:
-    //Screen size
-    int SCREEN_WIDTH = 0,
-        SCREEN_HEIGHT = 0,
-        center_width = 0,
-        center_height = 0;
-};
-
-
 // Initialize Window body
 bool Window_Init::init()
 {
@@ -87,4 +48,16 @@ bool Window_Init::init()
     }
 
     return success;
+};
+
+void Window_Init::set_screen_width_height(int w, int h)
+{
+    SCREEN_WIDTH = w;
+    SCREEN_HEIGHT = h;
+};
+
+void Window_Init::set_center()
+{
+    center_width = ((SCREEN_WIDTH - 1920) / 2);
+    center_height = ((SCREEN_HEIGHT - 1080) / 2);
 };

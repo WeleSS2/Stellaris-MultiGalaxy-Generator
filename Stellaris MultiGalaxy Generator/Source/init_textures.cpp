@@ -1,43 +1,3 @@
-class LTexture
-{
-public:
-    LTexture();
-
-    ~LTexture();
-
-    bool loadFromFile(std::string path);
-
-#if defined(SDL_TTF_MAJOR_VERSION)
-    bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
-#endif
-
-    void free();
-
-    void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
-    void setBlendMode(SDL_BlendMode blending);
-
-    void setAlpha(Uint8 alpha);
-
-    void render(int x, int y, int w, int h, SDL_Rect* clip = NULL);
-
-    void renderButton(int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
-
-    void renderButtonDynamicSize(int x, int y, int w, int h, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
-
-    int getWidth();
-    int getHeight();
-
-    SDL_Texture* getTexture();
-
-protected:
-    SDL_Texture* mTexture;
-    TTF_Font* gFont = NULL;
-
-    int mWidth;
-    int mHeight;
-};
-
 LTexture::LTexture()
 {
     //Constructor
@@ -67,7 +27,7 @@ bool LTexture::loadFromFile(std::string path)
     else
     {
         //Color key image
-        //SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 255, 255));
+        SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 255, 255));
 
         //Create texture from surface pixels
         newTexture = SDL_CreateTextureFromSurface(SMGG::gRenderer, loadedSurface);
@@ -96,7 +56,7 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
     free();
 
     //Render text surface
-    SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(SMGG::gFont, textureText.c_str(), textColor);
     if (textSurface != NULL)
     {
         //Create texture from surface pixels
@@ -117,7 +77,7 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
     }
     else
     {
-        //printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+        printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
     }
 
 
@@ -169,19 +129,19 @@ SDL_Texture* LTexture::getTexture()
     return mTexture;
 }
 
-
-void LTexture::render(int x, int y, int w, int h, SDL_Rect* clip)
+SDL_Rect LTexture::text_return_w_h(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {
     //Set rendering space and render to screen
-    SDL_Rect renderQuad = { x, y, w, h };
+    SDL_Rect renderQuad = { x, y, mWidth, mHeight };
 
+    //Set clip rendering dimensions
     if (clip != NULL)
     {
         renderQuad.w = clip->w;
         renderQuad.h = clip->h;
     }
 
-    SDL_RenderCopy(SMGG::gRenderer, mTexture, clip, &renderQuad);
+    return renderQuad;
 }
 
 void LTexture::renderButton(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
@@ -200,6 +160,20 @@ void LTexture::renderButton(int x, int y, SDL_Rect* clip, double angle, SDL_Poin
     SDL_RenderCopyEx(SMGG::gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
 }
 
+void LTexture::render(int x, int y, int w, int h, SDL_Rect* clip)
+{
+    //Set rendering space and render to screen
+    SDL_Rect renderQuad = { x, y, w, h };
+
+    if (clip != NULL)
+    {
+        renderQuad.w = clip->w;
+        renderQuad.h = clip->h;
+    }
+
+    SDL_RenderCopy(SMGG::gRenderer, mTexture, clip, &renderQuad);
+}
+
 void LTexture::renderButtonDynamicSize(int x, int y, int w, int h, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {
     //Set rendering space and render to screen
@@ -213,5 +187,12 @@ void LTexture::renderButtonDynamicSize(int x, int y, int w, int h, SDL_Rect* cli
     }
 
     //Render to screen
-    SDL_RenderCopyEx(SMGG::gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+    if (SDL_RenderCopyEx(SMGG::gRenderer, mTexture, clip, &renderQuad, angle, center, flip) == 0)
+    {
+        SDL_RenderCopyEx(SMGG::gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+    }
+    else
+    {
+        std::cout << "Failed to render dynamic button! " << SDL_GetError() << "\n";
+    }
 }

@@ -2,10 +2,11 @@
 // or project specific include files.
 
 #pragma once
-
+// Default libs
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <deque>
 #include <time.h>
 #include <string>
 #include <math.h>
@@ -21,6 +22,8 @@
 
 #define NOMINMAX
 
+
+// Additional dependencies
 #include <windows.h>
 #include <ShObjIdl.h>
 #include <ShlObj.h>
@@ -28,17 +31,31 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 
-
 #include "steam_api.h"
 
-#include "Source/smgg_namespaces.h"
+
+// Headers
+// Part 1, "deep code"
+#include "Headers/Classes_Declarations.h"
+#include "Headers/smgg_namespace.h" // Namespace for SMGG
+#include "Headers/window_init.h"
+#include "Headers/init_textures.h"
+
+
+// Part 2
+#include "Headers/smgg_pointers_namespace.h"
+#include "Headers/buttons.h"
+#include "Headers/graphics_engine.h"
+#include "Headers/base.h"
+
+// Source
 #include "Source/window_init.cpp"
 #include "Source/init_textures.cpp"
 #include "Source/graphics_engine.cpp"
-#include "Source/button_data.h"
 #include "Source/buttons.cpp"
 #include "Source/buttons_events.cpp"
 
+#include "Source/application_modules.cpp"
 #include "Source/base.cpp"
 #include "Source/basic_menu.cpp"
 #include "Source/algo.cpp"
